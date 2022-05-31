@@ -1,12 +1,24 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
+// import mongoose from 'mongoose';
+// import bcrypt from 'bcrypt';
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+
+// create another schema for the posts, sub schema for userSchema
+const postSubSchema = new mongoose.Schema({
+  postAuthor: { type: String, required: true }, // email of the poster
+  timestamp: { type: Date, required: true },
+  content: { type: String, required: true }
+});
 
 const UserSchema = new mongoose.Schema({
-  fname: { type: String, required: true },
-  lname: { type: String, required: true},
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true},
   email: { type: String, required: true },
+  password: { type: String, required: true },
   age: { type: Number, required: true },
-  password: { type: String, required: true }
+  friends: {type: [String]},
+  friendReqs: {type: [String]},
+  posts: {type: [postSubSchema]}  // an array of posts, with the schema from above
 });
 
 UserSchema.pre("save", function(next) {
@@ -30,4 +42,4 @@ UserSchema.methods.comparePassword = function(password, callback) {
   bcrypt.compare(password, this.password, callback);
 }
 
-mongoose.model("User", UserSchema);
+module.exports = mongoose.model("User", UserSchema);

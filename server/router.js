@@ -13,6 +13,7 @@ module.exports = (app) => {
   })
 
   app.post('/signup', controller.signUp)
+  app.post('/logIn', controller.logIn)
   app.get('/find-all', controller.findAll)
   app.get('/find-by-id', controller.findById)
   app.post('/find-by-id-post', controller.findByIdPOST)

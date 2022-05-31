@@ -99,7 +99,7 @@ class SignUp extends React.Component {
             "password": this.state.password
         }
 
-        return fetch(
+        fetch(
             'http://localhost:3001/signup',
             {
             method: 'POST',
@@ -108,11 +108,11 @@ class SignUp extends React.Component {
             },
             body: JSON.stringify(user)
         })
-            .then(response => response.json())
-            .then(body => {
-                if (body.success) {alert("Successfuly saved your account."); }
-                else { alert("Failed to save your account."); }
-            });
+        .then(response => response.json())
+        .then(body => {
+            if (body.success) {alert("Successfully saved your account."); }
+            else { alert("Failed to save your account."); }
+        });
     }
 
     checkValid(e){
