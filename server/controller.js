@@ -13,7 +13,10 @@ exports.signUp = (req, res, next) => {
     lastName: req.body.lastName,
     email: req.body.email,
     age: req.body.age,
-    password: req.body.password
+    password: req.body.password,
+    friends: [],
+    friendReqs: [],
+    posts: []
   });
 
   console.log("New user: ");
@@ -61,11 +64,44 @@ exports.logIn = (req, res) => {
       const token = jwt.sign(tokenPayload, "THIS_IS_A_SECRET_STRING");
 
       // return the token to the client
-      return res.send({ success: true, token, username: user.name });
+      return res.send({ success: true, token, firstName: user.firstName, email: user.email});
 
 
     })
   })
+}
+
+exports.checkIfLoggedIn = (req, res) => {
+  if (!req.cookies || !req.cookies.authToken){
+    // Scenario 1: FAIL - No cookies/no authToken cookie sent
+    return res.send({isLoggedIn: false});
+  }
+
+  // Token is present, validate it
+  // Token is present. Validate it
+  return jwt.verify(
+    req.cookies.authToken,
+    "THIS_IS_A_SECRET_STRING",
+    (err, tokenPayload) => {
+      if (err) {
+        // Scenario 2: FAIL - Error validating token
+        return res.send({ isLoggedIn: false });
+      }
+
+      const userId = tokenPayload._id;
+
+      // check if user exists
+      return User.findById(userId, (userErr, user) => {
+        if (userErr || !user) {
+          // Scenario 3: FAIL - Failed to find user based on id inside token payload
+          return res.send({ isLoggedIn: false });
+        }
+
+        // Scenario 4: SUCCESS - token and user id are valid
+        console.log("user is currently logged in");
+        return res.send({ isLoggedIn: true });
+      });
+    });
 }
 
 exports.findAll = (req, res, next) => {
@@ -79,6 +115,14 @@ exports.findById = (req, res, next) => {
 
   User.findOne({ _id: req.query.id}, (err, user) => {
     if (!err) { res.send(user) }
+  })
+}
+
+exports.findByEmailPOST = (req, res, next) => {
+  if(!req.query.email) {return res.send('No email provided')}
+
+  User.findOne({ email: req.query.email}, (err, user) => {
+    if (!err) {res.send(user)}
   })
 }
 

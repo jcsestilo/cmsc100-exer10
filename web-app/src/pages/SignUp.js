@@ -1,4 +1,5 @@
 import React from "react";
+import styles from './form.module.css';
 
 class SignUp extends React.Component {
     
@@ -23,6 +24,7 @@ class SignUp extends React.Component {
         this.handleRepeatPassChange = this.handleRepeatPassChange.bind(this)
         this.validateRepPassword = this.validateRepPassword.bind(this)
         this.checkValid = this.checkValid.bind(this)
+        this.backToHomepage = this.backToHomepage.bind(this)
         
         this.saveUser = this.saveUser.bind(this)
     }
@@ -91,6 +93,7 @@ class SignUp extends React.Component {
     }
 
     saveUser(){
+
         const user = {
             "firstName": this.state.fname,
             "lastName": this.state.lname,
@@ -116,6 +119,8 @@ class SignUp extends React.Component {
     }
 
     checkValid(e){
+        e.preventDefault()
+
         var repeatPassField = document.getElementById('repeatpass');
         var passField = document.getElementById('passwordtxt');
 
@@ -127,42 +132,47 @@ class SignUp extends React.Component {
         }
     }
 
+    backToHomepage(){
+        window.location.href = "/";
+    }
+
     render(){
         return(
 
             // Sign Up Form
             <div>
-                <h1>Sign Up Form</h1>
-                <form id="sign-up-form">
-                <label for="fname">First name: </label>
-                <input type="text" id="fname" name="fname" required value={this.state.fname} onChange={this.handleFnameChange}/><br/><br/>
-                <label for="lname">Last name: </label>
-                <input type="text" id="lname" name="lname" required value={this.state.lname} onChange={this.handleLnameChange}/><br/><br/>
+                <button onClick={this.backToHomepage} className={styles.button}>Back to homepage</button>
+                <h1 className={styles.title}>Sign Up Form</h1>
+                <form id="sign-up-form" className={styles.form}>
+                <label for="fname" className={styles.label}>First name: </label>
+                <input type="text" id="fname" name="fname" className={styles.input} required value={this.state.fname} onChange={this.handleFnameChange}/><br/><br/>
+                <label for="lname" className={styles.label}>Last name: </label>
+                <input type="text" id="lname" name="lname" className={styles.input} required value={this.state.lname} onChange={this.handleLnameChange}/><br/><br/>
 
-                <label for="emailtxt">Email: </label>
-                <input type="email" id="emailtxt" name="emailtxt" required value={this.state.email} onChange={this.handleEmailChange}/><br/><br/>
+                <label for="emailtxt" className={styles.label}>Email: </label>
+                <input type="email" id="emailtxt" name="emailtxt" className={styles.input} required value={this.state.email} onChange={this.handleEmailChange}/><br/><br/>
 
-                <label for="age">Age: </label>
-                <input type="number" id="age" name="age" required value={this.state.age} onChange={this.handleAgeChange}/><br/><br/>
+                <label for="age" className={styles.label}>Age: </label>
+                <input type="number" id="age" name="age" className={styles.input} required value={this.state.age} onChange={this.handleAgeChange}/><br/><br/>
 
-                <label for="passwordtxt">Password: </label>
-                <input type="password" id="passwordtxt" name="passwordtxt" data-isValid="false" required
+                <label for="passwordtxt" className={styles.label}>Password: </label>
+                <input type="password" id="passwordtxt" name="passwordtxt" className={styles.input} data-isValid="false" required
                 value={this.state.password} 
                 onChange={this.handlePassChange}
                 onInput={this.validatePassword}/>
-                <label id="errorname"></label>
+                <label id="errorname" className={styles.label}></label>
 
                 <br/><br/>
                 
-                <label for="repeatpass">Repeat Password: </label>
-                <input type="password" id="repeatpass" name="repeatpass" data-isValid="false" disabled required
+                <label for="repeatpass" className={styles.label}>Repeat Password: </label>
+                <input type="password" id="repeatpass" name="repeatpass" className={styles.input} data-isValid="false" disabled required
                 value={this.state.repeatPass}
                 onChange={this.handleRepeatPassChange}
                 onInput={this.validateRepPassword}/>
-                <label id="repeatpasserror"></label>
+                <label id="repeatpasserror" className={styles.label}></label>
 
                 <br/><br/>
-                <button id="submit-btn" type="submit" onClick={this.checkValid}>Sign Up</button>
+                <button id="submit-btn" type="submit" className={styles.button} onClick={this.checkValid}>Sign Up</button>
                 </form>
             </div>
         )
