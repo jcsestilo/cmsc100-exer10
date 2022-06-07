@@ -16,6 +16,7 @@ module.exports = (app) => {
   app.post('/login', controller.logIn)
   app.post('/checkifloggedin', controller.checkIfLoggedIn)
   app.post('/find-by-email-post', controller.findByEmailPOST)
+  app.post('/add-post', controller.addPost)
   app.get('/find-all', controller.findAll)
   app.get('/find-by-id', controller.findById)
   app.post('/find-by-id-post', controller.findByIdPOST)

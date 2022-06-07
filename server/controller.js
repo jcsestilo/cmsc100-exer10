@@ -64,7 +64,7 @@ exports.logIn = (req, res) => {
       const token = jwt.sign(tokenPayload, "THIS_IS_A_SECRET_STRING");
 
       // return the token to the client
-      return res.send({ success: true, token, firstName: user.firstName, email: user.email});
+      return res.send({ success: true, token, firstName: user.firstName });
 
 
     })
@@ -98,8 +98,8 @@ exports.checkIfLoggedIn = (req, res) => {
         }
 
         // Scenario 4: SUCCESS - token and user id are valid
-        console.log("user is currently logged in");
-        return res.send({ isLoggedIn: true });
+        //console.log("user is currently logged in");
+        return res.send({ isLoggedIn: true, user }); // return isLoggedIn and the user object
       });
     });
 }
@@ -119,10 +119,13 @@ exports.findById = (req, res, next) => {
 }
 
 exports.findByEmailPOST = (req, res, next) => {
-  if(!req.query.email) {return res.send('No email provided')}
-
-  User.findOne({ email: req.query.email}, (err, user) => {
-    if (!err) {res.send(user)}
+  // if(!req.query.email) {return res.send('No email provided')}
+  
+  User.findOne({ email: req.body.email }, (err, user) => {
+    // if fetch coming from Friends.js, will not use post
+    // if fetch coming from Posts.js, will use posts only
+    if (!err) {res.send({firstName: user.firstName, lastName: user.lastName, posts: user.posts ,success: true})}
+    else {res.send({success: false})}
   })
 }
 
@@ -134,6 +137,30 @@ exports.findByIdPOST = (req, res, next) => {
   User.findOne({ _id: req.body.id}, (err, user) => {
     if (!err) { res.send(user) }
   })
+}
+
+exports.addPost = (req, res, next) => {
+
+  // create the post schema to be added
+  const newPost = {
+    postAuthor: req.body.postAuthor,
+    timestamp: req.body.timestamp,
+    content: req.body.content
+  }
+
+  // find the user that posted it and update the posts array
+  User.findOneAndUpdate({_id: req.body.id },  // filter to find
+    { $push: { posts: newPost } }, // push to the posts array our newPost
+    function (err, user){
+      if(err) {
+        console.log("An error occured: "+err);
+        return res.send({success: false});
+      } else {
+        console.log("New Post: ")
+        console.log(newPost);
+        return res.send({success:true});
+      }
+      });
 }
 
 exports.add = (req, res, next) => {

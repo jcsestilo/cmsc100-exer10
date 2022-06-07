@@ -64,7 +64,6 @@ class LogIn extends React.Component{
                         });
                         
                         localStorage.setItem("firstName", body.firstName);
-                        localStorage.setItem("email", body.email);
                         alert("Successfully logged in");
                         this.redirect()
                 }

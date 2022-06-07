@@ -3,6 +3,9 @@ import { Navigate } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 
 import Header from './Header.js';
+import Friends from './Friends.js';
+import Form from './Form.js';
+import Posts from './Posts.js';
 
 class Feed extends React.Component{
     constructor(props){
@@ -12,8 +15,7 @@ class Feed extends React.Component{
             checkifLoggedIn: false,
             isLoggedIn: null,
             firstName: localStorage.getItem("firstName"),
-            email: localStorage.getItem("email")
-            
+            user: {}
         }
 
         this.logout = this.logout.bind(this);
@@ -33,8 +35,10 @@ class Feed extends React.Component{
                     this.setState({
                         checkifLoggedIn: true,
                         isLoggedIn: true,
-                        firstName: localStorage.getItem("firstName")
+                        firstName: localStorage.getItem("firstName"),
+                        user: body.user
                     });
+                    console.log(body.user.posts);
                 } else {
                     this.setState({
                         checkifLoggedIn: true, 
@@ -44,40 +48,6 @@ class Feed extends React.Component{
                 }
             });
         
-            Promise.all([
-
-                fetch("http://localhost:3001/checkifloggedin",
-                {
-                    method: "POST",
-                    credentials: "include"
-                }).then(response1 => response1.json()),
-
-                fetch("http://localhost:3001/find-by-email-post", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email: this.state.email })
-                }).then(response2 => response2.json())
-            
-            ]).then(([body1, body2]) => {
-                if(body1.isLoggedIn){
-                    this.setState({
-                        checkifLoggedIn: true,
-                        isLoggedIn: true,
-                        firstName: localStorage.getItem("firstName"),
-                        email: localStorage.getItem("email")
-                    });
-
-                    console.log(body2);
-                } else {
-                    this.setState({
-                        checkifLoggedIn: true, 
-                        isLoggedIn:false
-                    });
-                    alert("Please log in first!")
-                }
-            })
     }
 
     logout(e){
@@ -104,10 +74,16 @@ class Feed extends React.Component{
                 // render the page
                 return(
                     <div>
-                        <Header firstName={this.state.firstName}/>
-
-                        <br/>
                         <button id="logout" onClick={this.logout}>Log Out</button>
+                        <Header firstName={this.state.firstName}/>
+                        
+                        <div>
+                            <Friends data={this.state.user.friends} title={"Friends"}/>
+                        </div>
+
+                        <Form postAuthor={this.state.user.firstName+' '+this.state.user.lastName} id={this.state.user._id}/>
+
+                        <Posts userPosts={this.state.user.posts} title="Posts" friends={this.state.user.friends} />
                     </div>
                 )
             }

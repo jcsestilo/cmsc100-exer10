@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 // create another schema for the posts, sub schema for userSchema
 const postSubSchema = new mongoose.Schema({
   postAuthor: { type: String, required: true }, // email of the poster
-  timestamp: { type: Date, required: true },
+  timestamp: { type: String, required: true },
   content: { type: String, required: true }
 });
 
