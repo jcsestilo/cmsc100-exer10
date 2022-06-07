@@ -1,5 +1,7 @@
 import React from 'react';
 
+import IndivPost from './IndivPost';
+
 class Posts extends React.Component{
 
     constructor(props){
@@ -12,6 +14,7 @@ class Posts extends React.Component{
         }
 
         this.sortPosts = this.sortPosts.bind(this)
+        // this.editPost = this.editPost.bind(this)
     }
 
     sortPosts(){
@@ -31,6 +34,7 @@ class Posts extends React.Component{
     }
 
     componentDidMount(){
+        
         // POST: fetch the posts of each friend
         this.state.friends.forEach(element => {
             const email = {
@@ -50,23 +54,30 @@ class Posts extends React.Component{
             .then(response => response.json())
             .then(body => {
                 if(body.success){
-                    // if successful, append to the posts array each post object
+                    // new values of the array here
+                    const newStateArray = this.state.posts.slice();
                     // for each post in the array, append it
                     body.posts.forEach(post => {
-                        var newStateArray = this.state.posts.slice();
                         newStateArray.push(post);
-                        this.setState({posts: newStateArray});
                     });
+                    // after appending to newStateArray all the posts, set it to the posts state
+                    this.setState({posts: newStateArray})
                 } else {
                     console.log("An error occured.")
                 }
             })
+
         });
 
-        
-
-        //console.log(this.state.posts);
     }
+
+    // editPost(index){
+    //     var toEdit = document.getElementById(index+'content')
+    //     var textInput = document.getElementById(index+'textInput')
+
+    //     toEdit.style.display = "none";
+    //     textInput.style.display = "block";
+    // }
 
     render(){
         
@@ -77,12 +88,10 @@ class Posts extends React.Component{
                     this.state.posts.map((post, index) => {
                         return(
                             <div key={index}>
-                                <label>{post.postAuthor}</label>
-                                <br/>
-                                <label>{post.timestamp}</label>
-                                <br/>
-                                <p>{post.content}</p>
-                                <hr/>
+                                
+
+                                {/* Individual post component */}
+                                <IndivPost postAuthor={post.postAuthor} timestamp={post.timestamp} content={post.content} />
                             </div>
                         );
                     })

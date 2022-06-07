@@ -38,7 +38,7 @@ class Feed extends React.Component{
                         firstName: localStorage.getItem("firstName"),
                         user: body.user
                     });
-                    console.log(body.user.posts);
+                    //console.log(body.user.posts);
                 } else {
                     this.setState({
                         checkifLoggedIn: true, 

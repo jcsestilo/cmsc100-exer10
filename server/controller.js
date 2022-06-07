@@ -152,15 +152,16 @@ exports.addPost = (req, res, next) => {
   User.findOneAndUpdate({_id: req.body.id },  // filter to find
     { $push: { posts: newPost } }, // push to the posts array our newPost
     function (err, user){
-      if(err) {
-        console.log("An error occured: "+err);
-        return res.send({success: false});
-      } else {
-        console.log("New Post: ")
-        console.log(newPost);
-        return res.send({success:true});
+        if(err) {
+          console.log("An error occured: "+err);
+          return res.send({success: false});
+        } else {
+          console.log("New Post: ")
+          console.log(newPost);
+          return res.send({success:true});
+        }
       }
-      });
+  );
 }
 
 exports.add = (req, res, next) => {
