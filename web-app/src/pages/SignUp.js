@@ -119,7 +119,7 @@ class SignUp extends React.Component {
     }
 
     checkValid(e){
-        e.preventDefault()
+        //e.preventDefault()
 
         var repeatPassField = document.getElementById('repeatpass');
         var passField = document.getElementById('passwordtxt');

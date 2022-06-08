@@ -66,8 +66,8 @@ class Form extends React.Component{
         return(
             <div>
                 <h3 className={styles.title}>Create a New Post</h3>
-                <form class={styles.form}>
-                    <label for="post-content" className={styles.label}>Post Content:</label>
+                <form className={styles.form}>
+                    <label htmlFor="post-content" className={styles.label}>Post Content:</label>
                     <br/>
                     <textarea rows="5" cols="90" name="post-content" id="post-content" onChange={this.handlePostContentChange} className={styles.input}/>
 

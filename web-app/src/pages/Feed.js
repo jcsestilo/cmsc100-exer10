@@ -6,6 +6,8 @@ import Header from './Header.js';
 import Friends from './Friends.js';
 import Form from './Form.js';
 import Posts from './Posts.js';
+import FriendRequests from './FriendRequests.js';
+import Suggested from './Suggested.js';
 
 import styles from './feed.module.css';
 
@@ -76,7 +78,7 @@ class Feed extends React.Component{
                 // render the page
                 return(
                     <div>
-                        <button id="logout" onClick={this.logout}>Log Out</button>
+                        <button className={styles.button} id="logout" onClick={this.logout}>Log Out</button>
                         <Header firstName={this.state.firstName}/>
                         
                         <div className={styles.row}>
@@ -91,6 +93,11 @@ class Feed extends React.Component{
                                     userID={this.state.user._id}
                                     userName={this.state.user.firstName + ' ' + this.state.user.lastName}/>
 
+                            </div>
+
+                            <div className={styles.column}>
+                                <FriendRequests friendReqs={this.state.user.friendReqs} userID={this.state.user._id} userEmail={this.state.user.email}/>
+                                <Suggested friends={this.state.user.friends} userID={this.state.user._id} userEmail={this.state.user.email}/>
                             </div>
                         </div>
                     </div>
