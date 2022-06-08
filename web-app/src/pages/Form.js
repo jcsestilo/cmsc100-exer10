@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './feed.module.css';
 
 class Form extends React.Component{
 
@@ -64,15 +65,15 @@ class Form extends React.Component{
     render(){
         return(
             <div>
-                <h2>Create a New Post</h2>
-                <form>
-                    <label for="post-content">Post Content:</label>
+                <h3 className={styles.title}>Create a New Post</h3>
+                <form class={styles.form}>
+                    <label for="post-content" className={styles.label}>Post Content:</label>
                     <br/>
-                    <textarea rows="5" cols="90" name="post-content" id="post-content" onChange={this.handlePostContentChange}/>
+                    <textarea rows="5" cols="90" name="post-content" id="post-content" onChange={this.handlePostContentChange} className={styles.input}/>
 
                     <br/>
-                    <button type="submit" onClick={this.submitPost}>Submit</button>
-                    <button type="reset">Reset</button>
+                    <button type="submit" onClick={this.submitPost} className={styles.button}>Submit</button>&nbsp;
+                    <button type="reset" className={styles.button}>Reset</button>
 
                 </form>
             </div>

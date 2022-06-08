@@ -124,8 +124,41 @@ exports.findByEmailPOST = (req, res, next) => {
   User.findOne({ email: req.body.email }, (err, user) => {
     // if fetch coming from Friends.js, will not use post
     // if fetch coming from Posts.js, will use posts only
-    if (!err) {res.send({firstName: user.firstName, lastName: user.lastName, posts: user.posts ,success: true})}
+    if (!err) {res.send({firstName: user.firstName, lastName: user.lastName, posts: user.posts , id: user._id, success: true})}
     else {res.send({success: false})}
+  })
+}
+
+exports.editPost = (req, res, next) => {
+  User.findOneAndUpdate({ "_id": req.body.userID, "posts._id": req.body.postID},
+  { $set: { "posts.$.content": req.body.editedPost }},
+  function(err, user){
+    if(err){
+      console.log("An error occured")
+      console.log(err)
+      return res.send({success: false});
+    } else {
+      console.log("Result:")
+      console.log(user)
+      return res.send({success: true})
+    }
+  }
+  )
+}
+
+exports.deletePost = (req, res, next) => {
+  User.findOneAndUpdate({ "_id": req.body.userID },
+  { $pull: { 'posts': { _id: req.body.postID} } },
+  function(err, user){
+    if(err){
+      console.log("An error occured")
+      console.log(err)
+      return res.send({success: false});
+    } else {
+      console.log("Resultt:")
+      console.log(user)
+      return res.send({success: true});
+    }
   })
 }
 

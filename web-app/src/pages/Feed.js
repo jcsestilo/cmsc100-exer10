@@ -7,6 +7,8 @@ import Friends from './Friends.js';
 import Form from './Form.js';
 import Posts from './Posts.js';
 
+import styles from './feed.module.css';
+
 class Feed extends React.Component{
     constructor(props){
         super(props);
@@ -77,13 +79,20 @@ class Feed extends React.Component{
                         <button id="logout" onClick={this.logout}>Log Out</button>
                         <Header firstName={this.state.firstName}/>
                         
-                        <div>
+                        <div className={styles.row}>
                             <Friends data={this.state.user.friends} title={"Friends"}/>
+
+                            <div className={styles.main}>
+                                <Form postAuthor={this.state.user.firstName+' '+this.state.user.lastName} id={this.state.user._id}/>
+
+                                <Posts userPosts={this.state.user.posts} 
+                                    title="Posts" 
+                                    friends={this.state.user.friends} 
+                                    userID={this.state.user._id}
+                                    userName={this.state.user.firstName + ' ' + this.state.user.lastName}/>
+
+                            </div>
                         </div>
-
-                        <Form postAuthor={this.state.user.firstName+' '+this.state.user.lastName} id={this.state.user._id}/>
-
-                        <Posts userPosts={this.state.user.posts} title="Posts" friends={this.state.user.friends} />
                     </div>
                 )
             }

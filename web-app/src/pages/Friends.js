@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './feed.module.css';
 
 class Friends extends React.Component{
 
@@ -53,13 +54,13 @@ class Friends extends React.Component{
 
         return(
             <div>
-                <h3>{this.state.title}</h3>
+                <h3 className={styles.title}>{this.state.title}</h3>
 
                 {
                     this.state.friendsInfo.map((friend, index) => {
                         return(
                             <div key={index}>
-                                <label>{friend.firstName} {friend.lastName}</label>
+                                <label className={styles.label}>{friend.firstName} {friend.lastName}</label>
                             </div>
                         )
                     })
