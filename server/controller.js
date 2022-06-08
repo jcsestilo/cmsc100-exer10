@@ -104,18 +104,75 @@ exports.checkIfLoggedIn = (req, res) => {
     });
 }
 
-exports.findAll = (req, res, next) => {
-  User.find((err, user) => {
-    if (!err) { res.send(user) }
-  })
-}
+// exports.findAll = (req, res, next) => {
+//   User.find((err, user) => {
+//     if (!err) { res.send(user) }
+//   })
+// }
 
-exports.findById = (req, res, next) => {
-  if (!req.query.id) { return res.send('No id provided') }
+// exports.findById = (req, res, next) => {
+//   if (!req.query.id) { return res.send('No id provided') }
 
-  User.findOne({ _id: req.query.id}, (err, user) => {
-    if (!err) { res.send(user) }
-  })
+//   User.findOne({ _id: req.query.id}, (err, user) => {
+//     if (!err) { res.send(user) }
+//   })
+// }
+
+exports.findProfile = (req, res, next) => {
+  // case 1: first name is null but last name has value
+  if(req.body.firstName=='' && req.body.lastName!=''){
+    User.findOne({ lastName: req.body.lastName }, (err, user) => {
+      if(!err) {
+        res.send({success: true, 
+          id: user._id,
+          firstName: user.firstName, 
+          lastName: user.lastName, 
+          email: user.email, 
+          age: user.age})
+      } else{
+        res.send({success:false, noInput: false})
+      }
+    })
+  }
+  // case 2: last name is null but first name has value
+  else if(req.body.lastName=='' && req.body.firstName!=''){
+    User.findOne({ firstName: req.body.firstName }, (err, user) => {
+      if(!err) {
+        return res.send({success: true,
+          id: user._id, 
+          firstName: user.firstName, 
+          lastName: user.lastName, 
+          email: user.email, 
+          age: user.age});
+      } else{
+        return res.send({success:false, noInput: false})
+      }
+    })
+  }
+  // case 3: first name and last name both have values
+  else if(req.body.firstName!='' && req.body.lastName){
+    // we will use the postAuthor in posts as a selector
+    var fullName = req.body.firstName + ' ' + req.body.lastName;
+
+    User.findOne({ "posts.$.postAuthor": fullName }, (err, user) => {
+      if(!err){
+        return res.send({
+          success: true,
+          id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          age: user.age
+        });
+      } else {
+        return res.send({success:false, noInput: false})
+      }
+    })
+  }
+  // case 4: first name and last name both no values
+  else{
+    return res.send({success:false, noInput: true})
+  }
 }
 
 exports.findByEmailPOST = (req, res, next) => {
@@ -127,6 +184,72 @@ exports.findByEmailPOST = (req, res, next) => {
     if (!err) {res.send({firstName: user.firstName, lastName: user.lastName, posts: user.posts , id: user._id, success: true})}
     else {res.send({success: false})}
   })
+}
+
+exports.rejectFriendRequest = (req, res, next) => {
+  User.updateOne({ "_id": req.body.userID },
+    {$pull: { friendReqs: req.body.requesteeEmail }},
+    function(err, user) {
+      if(err){
+        console.log("Error for updating user:")
+        console.log(err)
+        return res.send({success:false})
+      } else {
+        console.log("Pulling requestee email from friend requests:")
+        console.log(user)
+      }
+    }
+  )
+}
+
+exports.acceptFriendRequest = (req, res, next) => {
+
+  // add the email of the requestee to the friends of user
+  User.updateOne({ "_id": req.body.userID }, 
+  { $push: { friends: req.body.requesteeEmail }},
+  function(err, user) {
+    if(err){
+      console.log("Error for updating user:")
+      console.log(err)
+      return res.send({success:false})
+    } else {
+      console.log("Pushing requestee email to friends:")
+      console.log(user)
+    }
+  }
+  )
+  // also remove from friendReqs array the email of the requestee
+  User.updateOne({ "_id": req.body.userID },
+  {$pull: { friendReqs: req.body.requesteeEmail }},
+  function(err, user) {
+    if(err){
+      console.log("Error for updating user:")
+      console.log(err)
+      return res.send({success:false})
+    } else {
+      console.log("Pulling requestee email from friend requests:")
+      console.log(user)
+    }
+  }
+
+  )
+
+  // after updating the friends of user, we now update the friends of the requestee
+  User.updateOne({ "_id": req.body.requesteeID },
+  { $push: { friends: req.body.userEmail } },
+  function(err, user){
+    if(err){
+      console.log("Error for updating requestee:")
+      console.log(err)
+      return res.send({success: false})
+    } else { 
+      console.log("Pushing user email to requestee friends:")
+      console.log(user)
+      // at this point, all operations are successful
+      return res.send({success: true})
+    }
+  }
+  )
 }
 
 exports.editPost = (req, res, next) => {
@@ -155,7 +278,7 @@ exports.deletePost = (req, res, next) => {
       console.log(err)
       return res.send({success: false});
     } else {
-      console.log("Resultt:")
+      console.log("Result:")
       console.log(user)
       return res.send({success: true});
     }
@@ -197,29 +320,63 @@ exports.addPost = (req, res, next) => {
   );
 }
 
-exports.add = (req, res, next) => {
+exports.getSuggestedUser = (req, res, next) => {
+  var exclude = req.body.friends.slice()
+  exclude.push(req.body.userEmail)
 
-  const newUser = new User({
-    title: req.body.title,
-    developer: req.body.developer,
-    year: req.body.year,
-    online: req.body.online,
-    maxLocalPlayers: req.body.maxLocalPlayers
-  })
 
-  newUser.save((err) => {
-    if (!err) { res.send(newUser)}
-    else { res.send('Unable to save user') }
-  })
-}
-
-exports.deleteById = (req, res, next) => {
-  User.findOneAndDelete({ _id: req.body.id }, (err, user) => {
-    if (!err && user) {
-      res.send('Successfully deleted ' + user.firstName)
-    }
-    else {
-      res.send('Unable to delete user')
+  // will return an array of users
+  User.find({ $and: [{"email": {$nin: exclude}}, {"friendReqs": { $ne: req.body.userEmail} } ] }, 
+  (err, user) => {
+    if(!err){
+      return res.send({ user, success:true})
+    } else{
+      console.log("Error on getting suggested users:")
+      console.log(err)
+      return res.send({success: false})
     }
   })
 }
+
+exports.sendFriendRequest = (req, res, next) => {
+  User.updateOne({ "_id": req.body.receiverID },
+    { $push: {friendReqs: req.body.userEmail}},
+    (err, result) => {
+      if(!err){
+        console.log("Successful sending friend request.")
+        return res.send({success: true})
+      } else {
+        console.log("Error sending friend request.")
+        console.log(err)
+        return res.send({success: false})
+      }
+    }
+  )
+}
+
+// exports.add = (req, res, next) => {
+
+//   const newUser = new User({
+//     title: req.body.title,
+//     developer: req.body.developer,
+//     year: req.body.year,
+//     online: req.body.online,
+//     maxLocalPlayers: req.body.maxLocalPlayers
+//   })
+
+//   newUser.save((err) => {
+//     if (!err) { res.send(newUser)}
+//     else { res.send('Unable to save user') }
+//   })
+// }
+
+// exports.deleteById = (req, res, next) => {
+//   User.findOneAndDelete({ _id: req.body.id }, (err, user) => {
+//     if (!err && user) {
+//       res.send('Successfully deleted ' + user.firstName)
+//     }
+//     else {
+//       res.send('Unable to delete user')
+//     }
+//   })
+// }
